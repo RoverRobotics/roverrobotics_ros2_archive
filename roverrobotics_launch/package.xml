@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>roverrobotics_launch</name>
+  <version>0.1.1</version>
+  <description>
+    Launch files and configuration scripts for operation of the Rover and supported sensors.
+  </description>
+  <maintainer email="will@roverrobotics.com">William Rook</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <author email="will@roverrobotics.com">William Rook</author>
+  <author email="info@roverrobotics.com">Rover Robotics</author>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+
+  <exec_depend>robot_state_publisher</exec_depend>
+
+  <exec_depend>roverrobotics_driver</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
