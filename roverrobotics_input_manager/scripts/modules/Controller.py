@@ -77,6 +77,7 @@ class Button:
             self.state = False
         else:
             self.state = 0
+        
             
     def update(self, states):
         state = states[self._index]
@@ -86,6 +87,7 @@ class Button:
         else:
             self.state = bool(state) if self._is_bool else state
         self._prev_press = state
+
      
         
 
