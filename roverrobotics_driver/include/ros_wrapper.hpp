@@ -74,6 +74,7 @@ namespace RoverRobotics
         std::string trim_topic_;
         std::string device_port_;
         std::string comm_type_;
+        std::string odom_topic_;
 
         
         // motors

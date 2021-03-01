@@ -23,6 +23,7 @@ RobotWrapper::RobotWrapper() : Node("roverrobotics", rclcpp::NodeOptions().use_i
     publish_tf_ = declare_parameter("publish_tf", false);
     linear_top_speed_ = declare_parameter("linear_top_speed", 2);
     angular_top_speed_ = declare_parameter("angular_top_speed", 2);
+    odom_topic_ = declare_parameter("odom_topic", "/odom_raw");
     //Init 5 Subs
     speed_command_subscriber_ = create_subscription<geometry_msgs::msg::Twist>(
         speed_topic_, rclcpp::QoS(1), [=](geometry_msgs::msg::Twist::ConstSharedPtr msg) { velocity_event_callback(msg); });
@@ -35,7 +36,7 @@ RobotWrapper::RobotWrapper() : Node("roverrobotics", rclcpp::NodeOptions().use_i
     robot_info__request_subscriber = create_subscription<std_msgs::msg::Bool>(
         estop_reset_topic_, rclcpp::QoS(2), [=](std_msgs::msg::Bool::ConstSharedPtr msg) { robot_info_request_callback(msg); });
     //Init Pub
-    odometry_publisher_ = create_publisher<nav_msgs::msg::Odometry>("odom_raw", rclcpp::QoS(4));
+    odometry_publisher_ = create_publisher<nav_msgs::msg::Odometry>(odom_topic_, rclcpp::QoS(4));
     robot_info_publisher = create_publisher<std_msgs::msg::Float32MultiArray>(robot_info_topic_, rclcpp::QoS(32));
     robot_status_publisher_ = create_publisher<std_msgs::msg::Float32MultiArray>(robot_status_topic_, rclcpp::QoS(31));
 
@@ -134,55 +135,13 @@ void RobotWrapper::publish_robot_status()
 
 void RobotWrapper::update_odom()
 {
-    static auto prev_time = get_clock()->now();
-    static auto current_time = get_clock()->now();
-    auto odom = std::make_unique<nav_msgs::msg::Odometry>();
-    odom->header.frame_id = odom_frame_id_;
-    odom->child_frame_id = odom_child_frame_id_;
-    odom->header.stamp = get_clock()->now();
-    auto dt = (current_time - prev_time).seconds();
-    if (dt > 0)
-    {
-        // In the odom_frame_id
-        tf2::Quaternion quat;
-
-        odom->pose.covariance.fill(-1.0);
-        // We don't have any odom pose, but rviz complains if the Quat is not
-        // normalized
-        odom_pose_x_ += cos(odom_orientation_z_) * robot_data_.linear_vel * dt;
-        odom_pose_y_ += sin(odom_orientation_z_) * robot_data_.linear_vel * dt;
-        odom_orientation_z_ += robot_data_.angular_vel * dt;
-
-        quat.setRPY(0, 0, odom_orientation_z_);
-
-        odom->pose.pose.position.x = odom_pose_x_;
-        odom->pose.pose.position.y = odom_pose_y_;
-        odom->pose.pose.orientation.z = quat.z();
-        odom->pose.pose.orientation.w = quat.w();
-
-        odom->twist.twist.linear.x = robot_data_.linear_vel;
-        odom->twist.twist.angular.z = robot_data_.angular_vel;
-
-        odom->twist.covariance.fill(0.0);
-
-        //update TF;
-        if (publish_tf_ == true)
-        {
-            tf_.transform.translation.x = odom->pose.pose.position.x;
-            tf_.transform.translation.y = odom->pose.pose.position.y;
-            tf_.transform.translation.z = odom->pose.pose.position.z;
-            tf_.transform.rotation.x = quat.x();
-            tf_.transform.rotation.y = quat.y();
-            tf_.transform.rotation.z = quat.z();
-            tf_.transform.rotation.w = quat.w();
-            tf_.header.stamp = current_time;
-            tf_.header.frame_id = odom_frame_id_;
-            tf_.child_frame_id = odom_child_frame_id_;
-            br_->sendTransform(tf_);
-        }
-        odometry_publisher_->publish(std::move(odom));
-    }
-    prev_time = get_clock()->now();
+    nav_msgs::msg::Odometry odom;
+    odom.header.frame_id = odom_frame_id_;
+    odom.child_frame_id = odom_child_frame_id_;
+    odom.header.stamp = get_clock()->now();
+    odom.twist.twist.linear.x = robot_data_.linear_vel;
+    odom.twist.twist.angular.z = robot_data_.angular_vel;
+    odometry_publisher_->publish(odom);
 }
 
 void RobotWrapper::velocity_event_callback(geometry_msgs::msg::Twist::ConstSharedPtr msg)
