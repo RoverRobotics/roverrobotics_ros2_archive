@@ -26,7 +26,11 @@ sudo make install
 cd workspace/
 colcon build
 ```
-3. Launch Robot (replace <launch file name> with your robot config.)
+3. Update autocomplete
+```
+source install/setup.bash
+```
+4. Launch Robot (replace <launch file name> with your robot config.)
 ```
 ros2 launch roverrobotics_driver <launch file name>
 ```
