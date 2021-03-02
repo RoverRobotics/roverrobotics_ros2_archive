@@ -1,8 +1,5 @@
-rover_serial:
-  ros__parameters:
-    serial_port: /dev/rover
 
-rover:
+roverrobotics_driver:
   ros__parameters:
     diagnostics_frequency: 0.2
     odometry_frequency: 15.0
