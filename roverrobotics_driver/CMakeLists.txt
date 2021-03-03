@@ -48,6 +48,11 @@ ament_target_dependencies(roverrobotics_driver
   #diagnostic_updater
   )
 
+install(DIRECTORY
+  launch
+  config
+  DESTINATION share/${PROJECT_NAME})
+
 install(TARGETS
   roverrobotics_driver
   DESTINATION lib/${PROJECT_NAME})

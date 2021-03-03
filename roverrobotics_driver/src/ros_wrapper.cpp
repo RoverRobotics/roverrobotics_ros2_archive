@@ -1,7 +1,7 @@
 #include "../include/ros_wrapper.hpp"
 using namespace RoverRobotics;
 
-RobotWrapper::RobotWrapper() : Node("roverrobotics", rclcpp::NodeOptions().use_intra_process_comms(true))
+RobotWrapper::RobotWrapper() : Node("roverrobotics", rclcpp::NodeOptions().use_intra_process_comms(false))
 {
     RCLCPP_INFO(get_logger(), "Starting rover driver node");
     // closed_loop_ = false;
@@ -20,9 +20,9 @@ RobotWrapper::RobotWrapper() : Node("roverrobotics", rclcpp::NodeOptions().use_i
     comm_type_ = declare_parameter("comm_type", "serial");
     estop_state_ = declare_parameter("estop_state", false);
     closed_loop_ = declare_parameter("closed_loop", false);
-    publish_tf_ = declare_parameter("publish_tf", false);
     linear_top_speed_ = declare_parameter("linear_top_speed", 2);
     angular_top_speed_ = declare_parameter("angular_top_speed", 2);
+    odom_topic_ = declare_parameter("odom_topic", "/odom_raw");
     //Init 5 Subs
     speed_command_subscriber_ = create_subscription<geometry_msgs::msg::Twist>(
         speed_topic_, rclcpp::QoS(1), [=](geometry_msgs::msg::Twist::ConstSharedPtr msg) { velocity_event_callback(msg); });
@@ -35,20 +35,16 @@ RobotWrapper::RobotWrapper() : Node("roverrobotics", rclcpp::NodeOptions().use_i
     robot_info__request_subscriber = create_subscription<std_msgs::msg::Bool>(
         estop_reset_topic_, rclcpp::QoS(2), [=](std_msgs::msg::Bool::ConstSharedPtr msg) { robot_info_request_callback(msg); });
     //Init Pub
-    odometry_publisher_ = create_publisher<nav_msgs::msg::Odometry>("odom_raw", rclcpp::QoS(4));
+    odometry_publisher_ = create_publisher<nav_msgs::msg::Odometry>(odom_topic_, rclcpp::QoS(4));
     robot_info_publisher = create_publisher<std_msgs::msg::Float32MultiArray>(robot_info_topic_, rclcpp::QoS(32));
     robot_status_publisher_ = create_publisher<std_msgs::msg::Float32MultiArray>(robot_status_topic_, rclcpp::QoS(31));
 
-    br_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
     odom_frame_id_ = declare_parameter("odom_frame_id", "odom");
     odom_child_frame_id_ = declare_parameter("odom_child_frame_id", "base_footprint");
-    odom_pose_x_ = 0.0;
-    odom_pose_y_ = 0.0;
-    odom_orientation_z_ = 0.0;
     odometry_timer_ = create_wall_timer(1s / odometry_frequency, [=]() { update_odom(); });
     robot_status_timer_ = create_wall_timer(1s / robot_status_frequency_, [=]() { publish_robot_status(); });
-    float pi_p = declare_parameter("motor_control_p_gain", 0.00);
-    float pi_i = declare_parameter("motor_control_i_gain", 0.00);
+    float pi_p = declare_parameter("motor_control_p_gain", 0.40);
+    float pi_i = declare_parameter("motor_control_i_gain", 0.70);
     float pi_d = declare_parameter("motor_control_d_gain", 0.00);
     pid_gains_ = {pi_p, pi_i, pi_d};
     auto now = get_clock()->now();
@@ -75,6 +71,7 @@ RobotWrapper::RobotWrapper() : Node("roverrobotics", rclcpp::NodeOptions().use_i
 
 void RobotWrapper::publish_robot_info()
 {
+    // RCLCPP_INFO(get_logger(), "Updating Robot Info");
     robot_data_ = robot_->info_request();
     std_msgs::msg::Float32MultiArray robot_info;
     robot_info.data.clear();
@@ -89,6 +86,7 @@ void RobotWrapper::publish_robot_info()
 
 void RobotWrapper::publish_robot_status()
 {
+    // RCLCPP_INFO(get_logger(), "Updating Robot Status");
     robot_data_ = robot_->status_request();
     std_msgs::msg::Float32MultiArray robot_status;
     robot_status.data.clear();
@@ -134,60 +132,19 @@ void RobotWrapper::publish_robot_status()
 
 void RobotWrapper::update_odom()
 {
-    static auto prev_time = get_clock()->now();
-    static auto current_time = get_clock()->now();
-    auto odom = std::make_unique<nav_msgs::msg::Odometry>();
-    odom->header.frame_id = odom_frame_id_;
-    odom->child_frame_id = odom_child_frame_id_;
-    odom->header.stamp = get_clock()->now();
-    auto dt = (current_time - prev_time).seconds();
-    if (dt > 0)
-    {
-        // In the odom_frame_id
-        tf2::Quaternion quat;
-
-        odom->pose.covariance.fill(-1.0);
-        // We don't have any odom pose, but rviz complains if the Quat is not
-        // normalized
-        odom_pose_x_ += cos(odom_orientation_z_) * robot_data_.linear_vel * dt;
-        odom_pose_y_ += sin(odom_orientation_z_) * robot_data_.linear_vel * dt;
-        odom_orientation_z_ += robot_data_.angular_vel * dt;
-
-        quat.setRPY(0, 0, odom_orientation_z_);
-
-        odom->pose.pose.position.x = odom_pose_x_;
-        odom->pose.pose.position.y = odom_pose_y_;
-        odom->pose.pose.orientation.z = quat.z();
-        odom->pose.pose.orientation.w = quat.w();
-
-        odom->twist.twist.linear.x = robot_data_.linear_vel;
-        odom->twist.twist.angular.z = robot_data_.angular_vel;
-
-        odom->twist.covariance.fill(0.0);
-
-        //update TF;
-        if (publish_tf_ == true)
-        {
-            tf_.transform.translation.x = odom->pose.pose.position.x;
-            tf_.transform.translation.y = odom->pose.pose.position.y;
-            tf_.transform.translation.z = odom->pose.pose.position.z;
-            tf_.transform.rotation.x = quat.x();
-            tf_.transform.rotation.y = quat.y();
-            tf_.transform.rotation.z = quat.z();
-            tf_.transform.rotation.w = quat.w();
-            tf_.header.stamp = current_time;
-            tf_.header.frame_id = odom_frame_id_;
-            tf_.child_frame_id = odom_child_frame_id_;
-            br_->sendTransform(tf_);
-        }
-        odometry_publisher_->publish(std::move(odom));
-    }
-    prev_time = get_clock()->now();
+    // RCLCPP_INFO(get_logger(), "Updating Robot Odom");
+    nav_msgs::msg::Odometry odom;
+    odom.header.frame_id = odom_frame_id_;
+    odom.child_frame_id = odom_child_frame_id_;
+    odom.header.stamp = get_clock()->now();
+    odom.twist.twist.linear.x = robot_data_.linear_vel;
+    odom.twist.twist.angular.z = robot_data_.angular_vel;
+    odometry_publisher_->publish(odom);
 }
 
 void RobotWrapper::velocity_event_callback(geometry_msgs::msg::Twist::ConstSharedPtr msg)
 {
-    static double speeddata[2];
+    static double speeddata[3];
     speeddata[0] = msg->linear.x;
     speeddata[1] = msg->angular.z;
     speeddata[2] = msg->angular.y;
@@ -233,7 +190,7 @@ int main(int argc, char **argv)
     rclcpp::init(argc, argv);
 
     rclcpp::executors::MultiThreadedExecutor executor;
-
+        
     auto rover_node = std::make_shared<RobotWrapper>();
     executor.add_node(rover_node);
 

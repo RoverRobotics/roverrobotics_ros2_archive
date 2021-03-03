@@ -74,6 +74,7 @@ namespace RoverRobotics
         std::string trim_topic_;
         std::string device_port_;
         std::string comm_type_;
+        std::string odom_topic_;
 
         
         // motors
@@ -85,19 +86,5 @@ namespace RoverRobotics
 
         std::string odom_frame_id_;
         std::string odom_child_frame_id_;
-        float odom_pose_x_;
-        float odom_pose_y_;
-        float odom_orientation_z_;
-        geometry_msgs::msg::TransformStamped tf_;
-        std::shared_ptr<tf2_ros::TransformBroadcaster> br_;
-        bool publish_tf_;
-
-        // /// Callback for new raw data received
-        // void on_raw_data(rover_msgs::msg::RawData::ConstSharedPtr data);
-
-        // void update_firmware_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &status);
-        // void update_power_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &status);
-        // void update_drive_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &status);
-        // std::shared_ptr<diagnostic_updater::Updater> updater;
     };
 } // namespace rover

@@ -16,7 +16,6 @@
   <!-- <exec_depend>roverrobotics_bringup</exec_depend> -->
   <!-- <exec_depend>roverrobotics_description</exec_depend> -->
   <exec_depend>roverrobotics_driver</exec_depend>
-  <exec_depend>roverrobotics_launch</exec_depend>
 
   <!-- <exec_depend>roverrobotics_msgs</exec_depend> -->
   <!-- <exec_depend>roverrobotics_navigation</exec_depend> -->

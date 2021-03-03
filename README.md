@@ -1,11 +1,36 @@
-# roverrobotics_ros2_b
-Packages for using Rover Robotics products with ROS 2
+# Roverrobotics_ros2_b
+## About:
+- This is a ROS2 wrapper to interface with roverrobotics' robots
+- Librover is required in order to use this wrapper
 
-This package is a wrapper for librover
+## Installation instructions
 
-## installation instructions
-
-1. Install librover: https://github.com/RoverRobotics/librover
-2. Clone this repository into catkin_workspace/src
-3. Run colcon build
-
+1. Cloning this repository into your workspace
+```
+cd workspace/src/
+git clone https://github.com/RoverRobotics/roverrobotics_ros2_b 
+```
+2. Install shared library
+``` 
+cd ~/
+mkdir library/
+cd library/
+git clone https://github.com/RoverRobotics/librover
+cd librover/
+cmake .
+make
+sudo make install 
+```
+2. Rebuild your workspace
+```
+cd workspace/
+colcon build
+```
+3. Update autocomplete
+```
+source install/setup.bash
+```
+4. Launch Robot (replace <launch file name> with your robot config.)
+```
+ros2 launch roverrobotics_driver <launch file name>
+```
