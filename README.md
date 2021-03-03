@@ -1,7 +1,7 @@
 # Roverrobotics_ros2_b
 ## About:
 - This is a ROS2 wrapper to interface with roverrobotics' robots
-- Librover is required in other to use this wrapper
+- Librover is required in order to use this wrapper
 
 ## Installation instructions
 
