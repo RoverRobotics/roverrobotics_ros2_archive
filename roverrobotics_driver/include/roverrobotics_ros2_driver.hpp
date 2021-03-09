@@ -27,10 +27,10 @@ namespace RoverRobotics
 {
     /// This node supervises a Connection node and translates between low-level
     /// commands and high-level commands.
-    class RobotWrapper : public rclcpp::Node
+    class RobotDriver : public rclcpp::Node
     {
     public:
-        RobotWrapper();
+        RobotDriver();
 
     private:
         void velocity_event_callback(geometry_msgs::msg::Twist::ConstSharedPtr msg); 
@@ -51,7 +51,7 @@ namespace RoverRobotics
         rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr trim_event_subscriber_;       // listen to trim event
         rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr estop_trigger_subscriber_;       // listen to estop trigger inputs
         rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr estop_reset_subscriber_;         // listen to estop reset inputs
-        rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr robot_info__request_subscriber;  // listen to robot_info request
+        rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr robot_info__request_subscriber_;  // listen to robot_info request
 
         rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr robot_info_publisher;    // publish robot_unique info
         rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr robot_status_publisher_; // publish robot state
@@ -84,6 +84,9 @@ namespace RoverRobotics
         double linear_top_speed_;
         double angular_top_speed_;
 
+        // odom
+        double odometry_frequency_;
+        bool pub_tf_;
         std::string odom_frame_id_;
         std::string odom_child_frame_id_;
     };
