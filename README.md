@@ -10,7 +10,12 @@
 cd workspace/src/
 git clone https://github.com/RoverRobotics/roverrobotics_ros2_b 
 ```
-2. Install shared library
+2. Install Udev rules for robot
+```
+cd workspace/src/roverrobotics_ros2_b/udev
+sudo cp roverrobotics.rules /etc/udev/rules.d/50-roverrobotics.rules && sudo udevadm control --reload-rules && udevadm trigger
+```
+3. Install shared library
 ``` 
 cd ~/
 mkdir library/
@@ -21,12 +26,12 @@ cmake .
 make
 sudo make install 
 ```
-2. Rebuild your workspace
+4. Rebuild your workspace
 ```
 cd workspace/
 colcon build
 ```
-3. Update autocomplete
+3. Update env variables and configuration files 
 ```
 source install/setup.bash
 ```
