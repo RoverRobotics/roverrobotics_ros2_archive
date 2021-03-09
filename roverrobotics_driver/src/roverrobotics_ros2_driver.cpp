@@ -1,4 +1,4 @@
-#include "ros_wrapper.hpp"
+#include "roverrobotics_ros2_driver.hpp"
 using namespace RoverRobotics;
 
 RobotWrapper::RobotWrapper()
