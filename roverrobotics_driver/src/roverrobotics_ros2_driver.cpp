@@ -110,23 +110,27 @@ RobotDriver::RobotDriver()
     pid_gains_ = {0, 0, 0};
   }
   // initialize connection to robot
-  RCLCPP_INFO(
-      get_logger(),
-      "Attempting to connect to robot at " + device_port_);
+  RCLCPP_INFO(get_logger(),
+              "Attempting to connect to robot at " + device_port_);
   if (robot_type_ == "pro") {
     try {
       robot_ = std::make_unique<ProProtocolObject>(
           device_port_.c_str(), comm_type_, closed_loop_, pid_gains_);
-    } catch (const std::exception &ex) {
-      RCLCPP_FATAL(get_logger(), "Trouble connecting to robot %s",
-                   std::to_string(errno));
+    } catch (int i) {
+      RCLCPP_FATAL(get_logger(), "Trouble connecting to robot ");
+      if (i == -1) {
+        RCLCPP_FATAL(get_logger(),
+                     "Robot at " + device_port_ + "is not available. Stopping This Node");
+      }else {
+        RCLCPP_FATAL(get_logger(),
+                     "Unknown Error. Stopping This Node");
+      }
       rclcpp::shutdown();
     }
   } else {
-    RCLCPP_INFO(get_logger(), "Robot Type is currently not suppported");
+    RCLCPP_INFO(get_logger(), "Robot Type is currently not suppported. Stopping this Node");
     rclcpp::shutdown();
   }
-  RCLCPP_INFO(get_logger(), "Robot Setup Complete");
 }
 
 void RobotDriver::publish_robot_info() {
@@ -248,6 +252,5 @@ int main(int argc, char **argv) {
   executor.add_node(rover_node);
 
   executor.spin();
-  std::cerr << "Ros Node is running" << std::endl;
   return 0;
 }
