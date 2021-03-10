@@ -119,22 +119,30 @@ RobotDriver::RobotDriver()
     } catch (int i) {
       RCLCPP_FATAL(get_logger(), "Trouble connecting to robot ");
       if (i == -1) {
-        RCLCPP_FATAL(get_logger(),
-                     "Robot at " + device_port_ + "is not available. Stopping This Node");
-      }else {
-        RCLCPP_FATAL(get_logger(),
-                     "Unknown Error. Stopping This Node");
+        RCLCPP_FATAL(get_logger(), "Robot at " + device_port_ +
+                                       " is not available. Stopping This Node");
+      } else {
+        RCLCPP_FATAL(get_logger(), "Unknown Error. Stopping This Node");
       }
       rclcpp::shutdown();
+      return;
     }
+    RCLCPP_INFO(get_logger(), "Connected to robot at " + device_port_);
   } else {
-    RCLCPP_INFO(get_logger(), "Robot Type is currently not suppported. Stopping this Node");
+    RCLCPP_WARN(get_logger(),
+                "Robot Type is currently not suppported. Stopping this Node");
     rclcpp::shutdown();
   }
 }
 
 void RobotDriver::publish_robot_info() {
   // RCLCPP_INFO(get_logger(), "Updating Robot Info");
+  if (!robot_->is_connected()) {
+    RCLCPP_FATAL(
+        get_logger(),
+        "Didn't receive data from the Robot. SHUTTING DOWN THE DRIVER NODE");
+    rclcpp::shutdown();
+  }
   robot_data_ = robot_->info_request();
   std_msgs::msg::Float32MultiArray robot_info;
   robot_info.data.clear();
@@ -148,6 +156,12 @@ void RobotDriver::publish_robot_info() {
 }
 
 void RobotDriver::publish_robot_status() {
+  // std::cerr << robot_->is_connected() << std::endl;
+  if (!robot_->is_connected()) {
+    RCLCPP_FATAL(get_logger(),
+                 "Didn't receive data from the Robot. Stopping this Driver Node");
+    rclcpp::shutdown();
+  }
   // RCLCPP_INFO(get_logger(), "Updating Robot Status");
   robot_data_ = robot_->status_request();
   std_msgs::msg::Float32MultiArray robot_status;
@@ -193,6 +207,12 @@ void RobotDriver::publish_robot_status() {
 }
 
 void RobotDriver::update_odom() {
+  if (!robot_->is_connected()) {
+    RCLCPP_FATAL(get_logger(),
+                 "Didn't receive data from the Robot. Stopping this Driver Node");
+
+    rclcpp::shutdown();
+  }
   // RCLCPP_INFO(get_logger(), "Updating Robot Odom");
   nav_msgs::msg::Odometry odom;
   odom.header.frame_id = odom_frame_id_;
@@ -205,6 +225,12 @@ void RobotDriver::update_odom() {
 
 void RobotDriver::velocity_event_callback(
     geometry_msgs::msg::Twist::ConstSharedPtr msg) {
+  if (!robot_->is_connected()) {
+    RCLCPP_FATAL(get_logger(),
+                 "Didn't receive data from the Robot. Stopping this Driver Node");
+
+    rclcpp::shutdown();
+  }
   static double speeddata[3];
   speeddata[0] = msg->linear.x;
   speeddata[1] = msg->angular.z;
