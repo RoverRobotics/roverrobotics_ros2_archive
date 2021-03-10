@@ -121,6 +121,8 @@ RobotDriver::RobotDriver()
       if (i == -1) {
         RCLCPP_FATAL(get_logger(), "Robot at " + device_port_ +
                                        " is not available. Stopping This Node");
+      } else if (i == -2) {
+        RCLCPP_FATAL(get_logger(), "This Communication Method is not supported");
       } else {
         RCLCPP_FATAL(get_logger(), "Unknown Error. Stopping This Node");
       }
@@ -158,8 +160,9 @@ void RobotDriver::publish_robot_info() {
 void RobotDriver::publish_robot_status() {
   // std::cerr << robot_->is_connected() << std::endl;
   if (!robot_->is_connected()) {
-    RCLCPP_FATAL(get_logger(),
-                 "Didn't receive data from the Robot. Stopping this Driver Node");
+    RCLCPP_FATAL(
+        get_logger(),
+        "Didn't receive data from the Robot. Stopping this Driver Node");
     rclcpp::shutdown();
   }
   // RCLCPP_INFO(get_logger(), "Updating Robot Status");
@@ -208,8 +211,9 @@ void RobotDriver::publish_robot_status() {
 
 void RobotDriver::update_odom() {
   if (!robot_->is_connected()) {
-    RCLCPP_FATAL(get_logger(),
-                 "Didn't receive data from the Robot. Stopping this Driver Node");
+    RCLCPP_FATAL(
+        get_logger(),
+        "Didn't receive data from the Robot. Stopping this Driver Node");
 
     rclcpp::shutdown();
   }
@@ -226,8 +230,9 @@ void RobotDriver::update_odom() {
 void RobotDriver::velocity_event_callback(
     geometry_msgs::msg::Twist::ConstSharedPtr msg) {
   if (!robot_->is_connected()) {
-    RCLCPP_FATAL(get_logger(),
-                 "Didn't receive data from the Robot. Stopping this Driver Node");
+    RCLCPP_FATAL(
+        get_logger(),
+        "Didn't receive data from the Robot. Stopping this Driver Node");
 
     rclcpp::shutdown();
   }
