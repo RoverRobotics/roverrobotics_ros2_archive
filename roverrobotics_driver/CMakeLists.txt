@@ -28,7 +28,7 @@ set_target_properties(librover PROPERTIES
 
 
 add_executable(roverrobotics_driver
-  src/ros_wrapper.cpp)
+  src/roverrobotics_ros2_driver.cpp)
 target_link_libraries(roverrobotics_driver librover)
 
 

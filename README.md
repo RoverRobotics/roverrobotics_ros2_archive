@@ -1,4 +1,4 @@
-# Roverrobotics_ros2_b
+# roverrobotics_ros2
 ## About:
 - This is a ROS2 wrapper to interface with roverrobotics' robots
 - Librover is required in order to use this wrapper
@@ -8,9 +8,14 @@
 1. Cloning this repository into your workspace
 ```
 cd workspace/src/
-git clone https://github.com/RoverRobotics/roverrobotics_ros2_b 
+git clone https://github.com/RoverRobotics/roverrobotics_ros2 
 ```
-2. Install shared library
+2. Install Udev rules for robot
+```
+cd workspace/src/roverrobotics_ros2/udev
+sudo cp roverrobotics.rules /etc/udev/rules.d/50-roverrobotics.rules && sudo udevadm control --reload-rules && udevadm trigger
+```
+3. Install shared library
 ``` 
 cd ~/
 mkdir library/
@@ -21,16 +26,16 @@ cmake .
 make
 sudo make install 
 ```
-2. Rebuild your workspace
+4. Rebuild your workspace
 ```
 cd workspace/
 colcon build
 ```
-3. Update autocomplete
+5. Update env variables and configuration files 
 ```
 source install/setup.bash
 ```
-4. Launch Robot (replace <launch file name> with your robot config.)
+6. Launch Robot (replace <launch file name> with your robot config.)
 ```
 ros2 launch roverrobotics_driver <launch file name>
 ```
