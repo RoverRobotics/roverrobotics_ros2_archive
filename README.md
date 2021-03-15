@@ -35,7 +35,7 @@ colcon build
 ```
 source install/setup.bash
 ```
-6. Launch Robot (replace <launch file name> with your robot config.)
+6. Launch Robot (replace < launch file name > with your robot config.)
 ```
 ros2 launch roverrobotics_driver <launch file name>
 ```
