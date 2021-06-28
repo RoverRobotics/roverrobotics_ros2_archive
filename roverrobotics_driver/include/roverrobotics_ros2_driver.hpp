@@ -50,7 +50,10 @@ class RobotDriver : public rclcpp::Node {
   const std::string CONTROL_MODE_DEFAULT_ = "OPEN_LOOP";
   const float LINEAR_TOP_SPEED_DEFAULT_ = 2;
   const float ANGULAR_TOP_SPEED_DEFAULT_ = 2;
-
+  const bool PUB_ODOM_TF_DEFAULT_ = false;
+  const float PID_P_DEFAULT_ = 0;
+  const float PID_I_DEFAULT_ = 0;
+  const float PID_D_DEFAULT_ = 0;
   const float ROBOT_ODOM_FREQUENCY_DEFAULT_ = 30;
   Control::angular_scaling_params angular_scaling_params_ = {0, 0, 0, 0, 0};
   const float ANGULAR_SCALING_A_DEFAULT_ = 0;
@@ -103,7 +106,7 @@ class RobotDriver : public rclcpp::Node {
 
   // odom
   double odometry_frequency_;
-  bool pub_tf_;
+  bool pub_odom_tf_;
   std::string odom_frame_id_;
   std::string odom_child_frame_id_;
 
@@ -112,9 +115,6 @@ class RobotDriver : public rclcpp::Node {
   bool estop_state_;
   std::string control_mode_name_;
   Control::robot_motion_mode_t control_mode_;
-  const float PID_P_DEFAULT_ = 0;
-  const float PID_I_DEFAULT_ = 0;
-  const float PID_D_DEFAULT_ = 0;
   double linear_top_speed_;
   double angular_top_speed_;
 

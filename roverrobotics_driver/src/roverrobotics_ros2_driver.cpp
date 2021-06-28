@@ -34,7 +34,7 @@ RobotDriver::RobotDriver()
   float pi_i_ = declare_parameter("motor_control_i_gain", PID_I_DEFAULT_);
   float pi_d_ = declare_parameter("motor_control_d_gain", PID_D_DEFAULT_);
   // Odom
-  pub_tf_ = declare_parameter("publish_tf", false);
+  pub_odom_tf_ = declare_parameter("publish_tf", PUB_ODOM_TF_DEFAULT_);
   odom_topic_ = declare_parameter("odom_topic", "/odom_raw");
   odometry_frequency_ =
       declare_parameter("odometry_frequency", ROBOT_ODOM_FREQUENCY_DEFAULT_);
@@ -97,7 +97,7 @@ RobotDriver::RobotDriver()
       robot_info_topic_, rclcpp::QoS(32));
   robot_status_publisher_ = create_publisher<std_msgs::msg::Float32MultiArray>(
       robot_status_topic_, rclcpp::QoS(31));
-  if (pub_tf_) {
+  if (pub_odom_tf_) {
     RCLCPP_INFO(get_logger(),
                 "Publishing Robot TF on " + odom_topic_ + " at %.2Fhz",
                 odometry_frequency_);
