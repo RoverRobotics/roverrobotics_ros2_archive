@@ -8,10 +8,12 @@ RobotDriver::RobotDriver()
   // Robot
   robot_status_topic_ =
       declare_parameter("robot_status_topic", ROBOT_STATUS_TOPIC_DEFAULT_);
-  robot_status_frequency_ = declare_parameter("robot_status_frequency", ROBOT_STATUS_FREQUENCY_DEFAULT_);
-  robot_info_request_topic_ =
-      declare_parameter("robot_info_request_topic", ROBOT_INFO_REQUEST_TOPIC_DEFAULT_);
-  robot_info_topic_ = declare_parameter("robot_info_topic", ROBOT_INFO_TOPIC_DEFAULT_);
+  robot_status_frequency_ = declare_parameter("robot_status_frequency",
+                                              ROBOT_STATUS_FREQUENCY_DEFAULT_);
+  robot_info_request_topic_ = declare_parameter(
+      "robot_info_request_topic", ROBOT_INFO_REQUEST_TOPIC_DEFAULT_);
+  robot_info_topic_ =
+      declare_parameter("robot_info_topic", ROBOT_INFO_TOPIC_DEFAULT_);
   robot_type_ = declare_parameter("robot_type", ROBOT_TYPE_DEFAULT_);
   device_port_ = declare_parameter("device_port", DEVICE_PORT_DEFAULT_);
   comm_type_ = declare_parameter("comm_type", COMM_TYPE_DEFAULT_);
@@ -24,15 +26,18 @@ RobotDriver::RobotDriver()
   trim_topic_ = declare_parameter("trim_topic", TRIM_TOPIC_DEFAULT_);
   estop_state_ = declare_parameter("estop_state", ESTOP_STATE_DEFAULT_);
   control_mode_name_ = declare_parameter("control_mode", CONTROL_MODE_DEFAULT_);
-  linear_top_speed_ = declare_parameter("linear_top_speed", LINEAR_TOP_SPEED_DEFAULT_);
-  angular_top_speed_ = declare_parameter("angular_top_speed", ANGULAR_TOP_SPEED_DEFAULT_);
+  linear_top_speed_ =
+      declare_parameter("linear_top_speed", LINEAR_TOP_SPEED_DEFAULT_);
+  angular_top_speed_ =
+      declare_parameter("angular_top_speed", ANGULAR_TOP_SPEED_DEFAULT_);
   float pi_p_ = declare_parameter("motor_control_p_gain", PID_P_DEFAULT_);
   float pi_i_ = declare_parameter("motor_control_i_gain", PID_I_DEFAULT_);
   float pi_d_ = declare_parameter("motor_control_d_gain", PID_D_DEFAULT_);
   // Odom
   pub_tf_ = declare_parameter("publish_tf", false);
   odom_topic_ = declare_parameter("odom_topic", "/odom_raw");
-  odometry_frequency_ = declare_parameter("odometry_frequency", ROBOT_ODOM_FREQUENCY_DEFAULT_);
+  odometry_frequency_ =
+      declare_parameter("odometry_frequency", ROBOT_ODOM_FREQUENCY_DEFAULT_);
   odom_frame_id_ = declare_parameter("odom_frame_id", "odom");
   odom_child_frame_id_ =
       declare_parameter("odom_child_frame_id", "base_footprint");
@@ -128,9 +133,9 @@ RobotDriver::RobotDriver()
     RCLCPP_WARN(
         get_logger(),
         "Closed Loop Control is Disabled and Control Mode is in OPEN LOOP");
-    RCLCPP_INFO(get_logger(), "PID is set to P:%.2f I:%.2f D:%.2f", 0.00, 0.00,
-                0.00);
-    pid_gains_ = {0, 0, 0};
+    RCLCPP_INFO(get_logger(), "PID is set to P:%.2f I:%.2f D:%.2f",
+                PID_P_DEFAULT_, PID_I_DEFAULT_, PID_D_DEFAULT_);
+    pid_gains_ = {PID_P_DEFAULT_, PID_I_DEFAULT_, PID_D_DEFAULT_};
   }
   // initialize connection to robot
   RCLCPP_INFO(get_logger(),
