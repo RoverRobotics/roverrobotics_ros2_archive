@@ -7,35 +7,46 @@ RobotDriver::RobotDriver()
   RCLCPP_INFO(get_logger(), "Starting Rover Driver node");
   // Robot
   robot_status_topic_ =
-      declare_parameter("robot_status_topic", "/robot_status");
-  robot_status_frequency_ = declare_parameter("robot_status_frequency", 60);
+      declare_parameter("robot_status_topic", ROBOT_STATUS_TOPIC_DEFAULT_);
+  robot_status_frequency_ = declare_parameter("robot_status_frequency", ROBOT_STATUS_FREQUENCY_DEFAULT_);
   robot_info_request_topic_ =
-      declare_parameter("robot_info_request_topic", "/robot_info/request");
-  robot_info_topic_ = declare_parameter("robot_info_topic", "/robot_info");
-  robot_type_ = declare_parameter("robot_type", "pro");
-  device_port_ = declare_parameter("device_port", "/dev/rover");
-  comm_type_ = declare_parameter("comm_type", "serial");
+      declare_parameter("robot_info_request_topic", ROBOT_INFO_REQUEST_TOPIC_DEFAULT_);
+  robot_info_topic_ = declare_parameter("robot_info_topic", ROBOT_INFO_TOPIC_DEFAULT_);
+  robot_type_ = declare_parameter("robot_type", ROBOT_TYPE_DEFAULT_);
+  device_port_ = declare_parameter("device_port", DEVICE_PORT_DEFAULT_);
+  comm_type_ = declare_parameter("comm_type", COMM_TYPE_DEFAULT_);
   // Drive
-  speed_topic_ = declare_parameter("speed_topic", "/cmd_vel/managed");
+  speed_topic_ = declare_parameter("speed_topic", SPEED_TOPIC_DEFAULT_);
   estop_trigger_topic_ =
-      declare_parameter("estop_trigger_topic", "/soft_estop/trigger");
+      declare_parameter("estop_trigger_topic", ESTOP_TRIGGER_TOPIC_DEFAULT_);
   estop_reset_topic_ =
-      declare_parameter("estop_reset_topic", "/soft_estop/reset");
-  trim_topic_ = declare_parameter("trim_topic", "/trim_event");
-  estop_state_ = declare_parameter("estop_state", false);
-  control_mode_name_ = declare_parameter("control_mode", "OPEN_LOOP");
-  linear_top_speed_ = declare_parameter("linear_top_speed", 2);
-  angular_top_speed_ = declare_parameter("angular_top_speed", 2);
-  float pi_p_ = declare_parameter("motor_control_p_gain", 0.40);
-  float pi_i_ = declare_parameter("motor_control_i_gain", 0.70);
-  float pi_d_ = declare_parameter("motor_control_d_gain", 0.00);
+      declare_parameter("estop_reset_topic", ESTOP_RESET_TOPIC_DEFAULT_);
+  trim_topic_ = declare_parameter("trim_topic", TRIM_TOPIC_DEFAULT_);
+  estop_state_ = declare_parameter("estop_state", ESTOP_STATE_DEFAULT_);
+  control_mode_name_ = declare_parameter("control_mode", CONTROL_MODE_DEFAULT_);
+  linear_top_speed_ = declare_parameter("linear_top_speed", LINEAR_TOP_SPEED_DEFAULT_);
+  angular_top_speed_ = declare_parameter("angular_top_speed", ANGULAR_TOP_SPEED_DEFAULT_);
+  float pi_p_ = declare_parameter("motor_control_p_gain", PID_P_DEFAULT_);
+  float pi_i_ = declare_parameter("motor_control_i_gain", PID_I_DEFAULT_);
+  float pi_d_ = declare_parameter("motor_control_d_gain", PID_D_DEFAULT_);
   // Odom
   pub_tf_ = declare_parameter("publish_tf", false);
   odom_topic_ = declare_parameter("odom_topic", "/odom_raw");
-  odometry_frequency_ = declare_parameter("odometry_frequency", 10.0);
+  odometry_frequency_ = declare_parameter("odometry_frequency", ROBOT_ODOM_FREQUENCY_DEFAULT_);
   odom_frame_id_ = declare_parameter("odom_frame_id", "odom");
   odom_child_frame_id_ =
       declare_parameter("odom_child_frame_id", "base_footprint");
+  // Angular Scaling params
+  angular_scaling_params_.a_coef =
+      declare_parameter("angular_a_coef", ANGULAR_SCALING_A_DEFAULT_);
+  angular_scaling_params_.b_coef =
+      declare_parameter("angular_b_coef", ANGULAR_SCALING_B_DEFAULT_);
+  angular_scaling_params_.c_coef =
+      declare_parameter("angular_c_coef", ANGULAR_SCALING_C_DEFAULT_);
+  angular_scaling_params_.min_scale_val =
+      declare_parameter("angular_min_scale", ANGULAR_SCALING_MIN_DEFAULT_);
+  angular_scaling_params_.max_scale_val =
+      declare_parameter("angular_max_scale", ANGULAR_SCALING_MAX_DEFAULT_);
   // Finished getting all parameters
   RCLCPP_INFO(get_logger(),
               "Robot type is Rover " + robot_type_ + " over " + comm_type_);
@@ -114,9 +125,11 @@ RobotDriver::RobotDriver()
     pid_gains_ = {pi_p_, pi_i_, pi_d_};
   } else {
     control_mode_ = Control::OPEN_LOOP;
-    RCLCPP_WARN(get_logger(), "Closed Loop Control is Disabled and Control Mode is in OPEN LOOP");
-    RCLCPP_INFO(get_logger(), "PID is set to P:%.2f I:%.2f D:%.2f", 0.00,
-                0.00, 0.00);
+    RCLCPP_WARN(
+        get_logger(),
+        "Closed Loop Control is Disabled and Control Mode is in OPEN LOOP");
+    RCLCPP_INFO(get_logger(), "PID is set to P:%.2f I:%.2f D:%.2f", 0.00, 0.00,
+                0.00);
     pid_gains_ = {0, 0, 0};
   }
   // initialize connection to robot
@@ -126,6 +139,66 @@ RobotDriver::RobotDriver()
     try {
       robot_ = std::make_unique<ProProtocolObject>(
           device_port_.c_str(), comm_type_, control_mode_, pid_gains_);
+    } catch (int i) {
+      RCLCPP_FATAL(get_logger(), "Trouble connecting to robot ");
+      if (i == -1) {
+        RCLCPP_FATAL(get_logger(), "Robot at " + device_port_ +
+                                       " is not available. Stopping This Node");
+      } else if (i == -2) {
+        RCLCPP_FATAL(get_logger(),
+                     "This Communication Method is not supported");
+      } else {
+        RCLCPP_FATAL(get_logger(), "Unknown Error. Stopping This Node");
+      }
+      rclcpp::shutdown();
+      return;
+    }
+    RCLCPP_INFO(get_logger(), "Connected to robot at " + device_port_);
+  } else if (robot_type_ == "zero2") {
+    try {
+      robot_ = std::make_unique<Zero2ProtocolObject>(
+          device_port_.c_str(), comm_type_, control_mode_, pid_gains_,
+          angular_scaling_params_);
+    } catch (int i) {
+      RCLCPP_FATAL(get_logger(), "Trouble connecting to robot ");
+      if (i == -1) {
+        RCLCPP_FATAL(get_logger(), "Robot at " + device_port_ +
+                                       " is not available. Stopping This Node");
+      } else if (i == -2) {
+        RCLCPP_FATAL(get_logger(),
+                     "This Communication Method is not supported");
+      } else {
+        RCLCPP_FATAL(get_logger(), "Unknown Error. Stopping This Node");
+      }
+      rclcpp::shutdown();
+      return;
+    }
+    RCLCPP_INFO(get_logger(), "Connected to robot at " + device_port_);
+  } else if (robot_type_ == "pro2") {
+    try {
+      robot_ = std::make_unique<Pro2ProtocolObject>(
+          device_port_.c_str(), comm_type_, control_mode_, pid_gains_,
+          angular_scaling_params_);
+    } catch (int i) {
+      RCLCPP_FATAL(get_logger(), "Trouble connecting to robot ");
+      if (i == -1) {
+        RCLCPP_FATAL(get_logger(), "Robot at " + device_port_ +
+                                       " is not available. Stopping This Node");
+      } else if (i == -2) {
+        RCLCPP_FATAL(get_logger(),
+                     "This Communication Method is not supported");
+      } else {
+        RCLCPP_FATAL(get_logger(), "Unknown Error. Stopping This Node");
+      }
+      rclcpp::shutdown();
+      return;
+    }
+    RCLCPP_INFO(get_logger(), "Connected to robot at " + device_port_);
+  } else if (robot_type_ == "mini") {
+    try {
+      robot_ = std::make_unique<MiniProtocolObject>(
+          device_port_.c_str(), comm_type_, control_mode_, pid_gains_,
+          angular_scaling_params_);
     } catch (int i) {
       RCLCPP_FATAL(get_logger(), "Trouble connecting to robot ");
       if (i == -1) {

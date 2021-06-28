@@ -34,6 +34,30 @@ class RobotDriver : public rclcpp::Node {
   RobotDriver();
 
  private:
+  // Default Values
+  const std::string ROBOT_STATUS_TOPIC_DEFAULT_ = "/robot_status";
+  const float ROBOT_STATUS_FREQUENCY_DEFAULT_ = 60.0;
+  const std::string ROBOT_INFO_REQUEST_TOPIC_DEFAULT_ = "/robot_info/request";
+  const std::string ROBOT_INFO_TOPIC_DEFAULT_ = "/robot_info";
+  const std::string ROBOT_TYPE_DEFAULT_ = "NONE";
+  const std::string DEVICE_PORT_DEFAULT_ = "NONE";
+  const std::string COMM_TYPE_DEFAULT_ = "NONE";
+  const std::string SPEED_TOPIC_DEFAULT_ = "/cmd_vel/managed";
+  const std::string ESTOP_TRIGGER_TOPIC_DEFAULT_ = "/soft_estop/trigger";
+  const std::string ESTOP_RESET_TOPIC_DEFAULT_ = "/soft_estop/reset";
+  const std::string TRIM_TOPIC_DEFAULT_ = "/trim_event";
+  const bool ESTOP_STATE_DEFAULT_ = false;
+  const std::string CONTROL_MODE_DEFAULT_ = "OPEN_LOOP";
+  const float LINEAR_TOP_SPEED_DEFAULT_ = 2;
+  const float ANGULAR_TOP_SPEED_DEFAULT_ = 2;
+
+  const float ROBOT_ODOM_FREQUENCY_DEFAULT_ = 30;
+  Control::angular_scaling_params angular_scaling_params_ = {0, 0, 0, 0, 0};
+  const float ANGULAR_SCALING_A_DEFAULT_ = 0;
+  const float ANGULAR_SCALING_B_DEFAULT_ = 0;
+  const float ANGULAR_SCALING_C_DEFAULT_ = 0;
+  const float ANGULAR_SCALING_MIN_DEFAULT_ = 1;
+  const float ANGULAR_SCALING_MAX_DEFAULT_ = 1;
   // robot protocol pointer
   std::unique_ptr<BaseProtocolObject> robot_;
   // universal robot data structure
@@ -88,6 +112,9 @@ class RobotDriver : public rclcpp::Node {
   bool estop_state_;
   std::string control_mode_name_;
   Control::robot_motion_mode_t control_mode_;
+  const float PID_P_DEFAULT_ = 0;
+  const float PID_I_DEFAULT_ = 0;
+  const float PID_D_DEFAULT_ = 0;
   double linear_top_speed_;
   double angular_top_speed_;
 
