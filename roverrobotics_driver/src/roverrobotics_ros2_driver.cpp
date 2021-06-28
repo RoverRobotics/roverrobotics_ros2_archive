@@ -23,7 +23,7 @@ RobotDriver::RobotDriver()
       declare_parameter("estop_reset_topic", "/soft_estop/reset");
   trim_topic_ = declare_parameter("trim_topic", "/trim_event");
   estop_state_ = declare_parameter("estop_state", false);
-  closed_loop_ = declare_parameter("closed_loop", false);
+  control_mode_name_ = declare_parameter("control_mode", "OPEN_LOOP");
   linear_top_speed_ = declare_parameter("linear_top_speed", 2);
   angular_top_speed_ = declare_parameter("angular_top_speed", 2);
   float pi_p_ = declare_parameter("motor_control_p_gain", 0.40);
@@ -96,16 +96,26 @@ RobotDriver::RobotDriver()
       get_logger(),
       "Publishing Robot status on " + robot_status_topic_ + " at %.2Fhz",
       robot_status_frequency_);
+
   // Init Pid
-  if (closed_loop_) {
+  if (control_mode_name_ == "TRACTION_CONTROL") {
+    control_mode_ = Control::TRACTION_CONTROL;
     RCLCPP_WARN(get_logger(),
-                "Closed Loop Control is Enabled; Drive with CAUTION");
+                "Control Mode is in TRACTION CONTROL; Drive with CAUTION");
     RCLCPP_INFO(get_logger(), "PID is at P:%.2f I:%.2f D:%.2f", pi_p_, pi_i_,
                 pi_d_);
     pid_gains_ = {pi_p_, pi_i_, pi_d_};
-  } else if (!closed_loop_) {
-    RCLCPP_WARN(get_logger(), "Closed Loop Control is Disabled");
-    RCLCPP_INFO(get_logger(), "PID is reset to P:%.2f I:%.2f D:%.2f", 0.00,
+  } else if (control_mode_name_ == "INDEPENDENT_WHEEL") {
+    control_mode_ = Control::INDEPENDENT_WHEEL;
+    RCLCPP_WARN(get_logger(),
+                "Control Mode is in INDEPENDENT WHEEL; Drive with CAUTION");
+    RCLCPP_INFO(get_logger(), "PID is at P:%.2f I:%.2f D:%.2f", pi_p_, pi_i_,
+                pi_d_);
+    pid_gains_ = {pi_p_, pi_i_, pi_d_};
+  } else {
+    control_mode_ = Control::OPEN_LOOP;
+    RCLCPP_WARN(get_logger(), "Closed Loop Control is Disabled and Control Mode is in OPEN LOOP");
+    RCLCPP_INFO(get_logger(), "PID is set to P:%.2f I:%.2f D:%.2f", 0.00,
                 0.00, 0.00);
     pid_gains_ = {0, 0, 0};
   }
@@ -115,14 +125,15 @@ RobotDriver::RobotDriver()
   if (robot_type_ == "pro") {
     try {
       robot_ = std::make_unique<ProProtocolObject>(
-          device_port_.c_str(), comm_type_, closed_loop_, pid_gains_);
+          device_port_.c_str(), comm_type_, control_mode_, pid_gains_);
     } catch (int i) {
       RCLCPP_FATAL(get_logger(), "Trouble connecting to robot ");
       if (i == -1) {
         RCLCPP_FATAL(get_logger(), "Robot at " + device_port_ +
                                        " is not available. Stopping This Node");
       } else if (i == -2) {
-        RCLCPP_FATAL(get_logger(), "This Communication Method is not supported");
+        RCLCPP_FATAL(get_logger(),
+                     "This Communication Method is not supported");
       } else {
         RCLCPP_FATAL(get_logger(), "Unknown Error. Stopping This Node");
       }
