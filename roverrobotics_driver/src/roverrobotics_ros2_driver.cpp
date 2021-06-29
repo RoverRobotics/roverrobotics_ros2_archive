@@ -61,8 +61,8 @@ RobotDriver::RobotDriver()
   else
     RCLCPP_INFO(get_logger(), "Estop state is currently inactive");
 
-  RCLCPP_INFO(get_logger(), "Estop activation at " + estop_trigger_topic_);
-  RCLCPP_INFO(get_logger(), "Estop deactivation at " + estop_reset_topic_);
+  RCLCPP_INFO(get_logger(), "Receiving Estop activation at " + estop_trigger_topic_);
+  RCLCPP_INFO(get_logger(), "Receiving Estop deactivation at " + estop_reset_topic_);
 
   // Init Sub
   speed_command_subscriber_ = create_subscription<geometry_msgs::msg::Twist>(
@@ -118,25 +118,19 @@ RobotDriver::RobotDriver()
     control_mode_ = Control::TRACTION_CONTROL;
     RCLCPP_WARN(get_logger(),
                 "Control Mode is in TRACTION CONTROL; Drive with CAUTION");
-    RCLCPP_INFO(get_logger(), "PID is at P:%.2f I:%.2f D:%.2f", pi_p_, pi_i_,
-                pi_d_);
-    pid_gains_ = {pi_p_, pi_i_, pi_d_};
   } else if (control_mode_name_ == "INDEPENDENT_WHEEL") {
     control_mode_ = Control::INDEPENDENT_WHEEL;
     RCLCPP_WARN(get_logger(),
                 "Control Mode is in INDEPENDENT WHEEL; Drive with CAUTION");
-    RCLCPP_INFO(get_logger(), "PID is at P:%.2f I:%.2f D:%.2f", pi_p_, pi_i_,
-                pi_d_);
-    pid_gains_ = {pi_p_, pi_i_, pi_d_};
   } else {
     control_mode_ = Control::OPEN_LOOP;
-    RCLCPP_WARN(
+    RCLCPP_INFO(
         get_logger(),
         "Closed Loop Control is Disabled and Control Mode is in OPEN LOOP");
-    RCLCPP_INFO(get_logger(), "PID is set to P:%.2f I:%.2f D:%.2f",
-                PID_P_DEFAULT_, PID_I_DEFAULT_, PID_D_DEFAULT_);
-    pid_gains_ = {PID_P_DEFAULT_, PID_I_DEFAULT_, PID_D_DEFAULT_};
   }
+  RCLCPP_INFO(get_logger(), "PID is at P:%.2f I:%.2f D:%.2f", pi_p_, pi_i_,
+              pi_d_);
+  pid_gains_ = {pi_p_, pi_i_, pi_d_};
   // initialize connection to robot
   RCLCPP_INFO(get_logger(),
               "Attempting to connect to robot at " + device_port_);
@@ -224,6 +218,9 @@ RobotDriver::RobotDriver()
                 "Robot Type is currently not suppported. Stopping this Node");
     rclcpp::shutdown();
   }
+  RCLCPP_INFO(get_logger(),
+              "Use 'ros2 param dump /roverrobotics_driver --print' to print "
+              "see all parameters running on this node");
 }
 
 void RobotDriver::publish_robot_info() {

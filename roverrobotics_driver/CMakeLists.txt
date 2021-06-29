@@ -50,6 +50,9 @@ ament_target_dependencies(roverrobotics_driver
 
 install(DIRECTORY
   launch
+  DESTINATION share/${PROJECT_NAME})
+
+install(DIRECTORY
   config
   DESTINATION share/${PROJECT_NAME})
 

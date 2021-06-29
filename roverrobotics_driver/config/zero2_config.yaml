@@ -2,17 +2,17 @@ roverrobotics_driver:
   ros__parameters:
     diagnostics_frequency: 0.2
     odometry_frequency: 15.0
-    motor_control_p_gain: 0.0005
+    motor_control_p_gain: 0.0011
     motor_control_i_gain: 0.000
-    motor_control_d_gain: 0.00007
+    motor_control_d_gain: 0.00008
     publish_tf: true
     # robot_status_topic: "/"
     # robot_status_frequency: 60.0
     # robot_info_request_topic:
     # robot_info_topic:
-    robot_type: "pro2"
-    device_port: "can0"
-    comm_type: "can"
+    robot_type: "zero2"
+    device_port: "rover-zero-v2"
+    comm_type: "serial"
     # speed_topic:
     # estop_trigger_topic:
     # estop_reset_topic:
