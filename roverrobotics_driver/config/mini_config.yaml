@@ -13,6 +13,7 @@ roverrobotics_driver:
     robot_type: "mini"
     device_port: "can0"
     comm_type: "can"
+    
     # speed_topic:
     # estop_trigger_topic:
     # estop_reset_topic:
