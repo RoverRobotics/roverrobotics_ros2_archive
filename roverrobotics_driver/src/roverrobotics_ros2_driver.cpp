@@ -39,7 +39,7 @@ RobotDriver::RobotDriver()
     robot_mode_ = Control::OPEN_LOOP;
   // PID Control
   if (robot_mode_ != Control::OPEN_LOOP) {
-    RCLCPP_WARN(getlogger(),
+    RCLCPP_WARN(get_logger(),
         "Closed Loop Control is ACTIVE. Please make sure your PID is properly "
         "tuned");
   }
