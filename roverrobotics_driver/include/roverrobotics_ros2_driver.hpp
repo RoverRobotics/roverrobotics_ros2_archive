@@ -81,6 +81,7 @@ class RobotDriver : public rclcpp::Node {
   std::string device_port_;
   std::string comm_type_;
   std::string odom_topic_;
+  std::string mode_name_;
 
   // motors
   int motors_id_[4] = {1, 2, 3, 4};
@@ -88,7 +89,10 @@ class RobotDriver : public rclcpp::Node {
   bool closed_loop_;
   double linear_top_speed_;
   double angular_top_speed_;
-
+  Control::robot_motion_mode_t robot_mode_;
+  Control::pid_gains pidGains_ = {0, 0, 0};
+  Control::robot_motion_mode_t robot_mode_;
+  Control::angular_scaling_params angular_scaling_params_ = {0, 0, 0, 0, 0};
   // odom
   double odometry_frequency_;
   bool pub_tf_;

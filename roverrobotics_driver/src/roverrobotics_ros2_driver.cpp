@@ -15,6 +15,8 @@ RobotDriver::RobotDriver()
   robot_type_ = declare_parameter("robot_type", "pro");
   device_port_ = declare_parameter("device_port", "/dev/rover");
   comm_type_ = declare_parameter("comm_type", "serial");
+  mode_name_ = declare_parameter("mode_name", "OPEN_LOOP");
+
   // Drive
   speed_topic_ = declare_parameter("speed_topic", "/cmd_vel/managed");
   estop_trigger_topic_ =
@@ -29,6 +31,18 @@ RobotDriver::RobotDriver()
   float pi_p_ = declare_parameter("motor_control_p_gain", 0.40);
   float pi_i_ = declare_parameter("motor_control_i_gain", 0.70);
   float pi_d_ = declare_parameter("motor_control_d_gain", 0.00);
+  if (mode_name_ == "TRACTION_CONTROL")
+    robot_mode_ = Control::TRACTION_CONTROL;
+  else if (mode_name_ == "INDEPENDENT_WHEEL")
+    robot_mode_ = Control::INDEPENDENT_WHEEL;
+  else
+    robot_mode_ = Control::OPEN_LOOP;
+  // PID Control
+  if (robot_mode_ != Control::OPEN_LOOP) {
+    RCLCPP_WARN(
+        "Closed Loop Control is ACTIVE. Please make sure your PID is properly "
+        "tuned");
+  }
   // Odom
   pub_tf_ = declare_parameter("publish_tf", false);
   odom_topic_ = declare_parameter("odom_topic", "/odom_raw");
@@ -115,14 +129,15 @@ RobotDriver::RobotDriver()
   if (robot_type_ == "pro") {
     try {
       robot_ = std::make_unique<ProProtocolObject>(
-          device_port_.c_str(), comm_type_, closed_loop_, pid_gains_);
+          device_port_.c_str(), comm_type_, robot_mode_, pidGains_);
     } catch (int i) {
       RCLCPP_FATAL(get_logger(), "Trouble connecting to robot ");
       if (i == -1) {
         RCLCPP_FATAL(get_logger(), "Robot at " + device_port_ +
                                        " is not available. Stopping This Node");
       } else if (i == -2) {
-        RCLCPP_FATAL(get_logger(), "This Communication Method is not supported");
+        RCLCPP_FATAL(get_logger(),
+                     "This Communication Method is not supported");
       } else {
         RCLCPP_FATAL(get_logger(), "Unknown Error. Stopping This Node");
       }
