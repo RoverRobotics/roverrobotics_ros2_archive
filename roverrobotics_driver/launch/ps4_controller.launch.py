@@ -21,7 +21,9 @@ def generate_launch_description():
         output='screen',
         parameters=[
                 {"controller": str(controller_config),
-                 "topics": str(topics_config)}]
+                 "topics": str(topics_config)}],
+        respawn=True,
+        respawn_delay=4
     )
 
     ld.add_action(node)
@@ -29,7 +31,9 @@ def generate_launch_description():
         package='joy',
         executable='joy_node',
         output='screen',
-        parameters=[{'dev': '/dev/input/jsX'}]
+        parameters=[{'dev': '/dev/input/jsX'}],
+        respawn=True,
+        respawn_delay=4
     )
     ld.add_action(node2)
     return ld
