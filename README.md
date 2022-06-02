@@ -1,7 +1,8 @@
 # roverrobotics_ros2
 ## About:
-- This is a ROS2 wrapper to interface with roverrobotics' robots
+- This is a ROS2 wrapper to interface with roverrobotics' robots.
 - Librover is required in order to use this wrapper
+- This is being used for the development of the rover robotics mini on ros2
 
 ## Installation instructions
 
