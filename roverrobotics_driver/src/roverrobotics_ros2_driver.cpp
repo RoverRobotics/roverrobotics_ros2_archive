@@ -203,7 +203,7 @@ RobotDriver::RobotDriver()
         RCLCPP_FATAL(get_logger(),
                      "This Communication Method is not supported");
       } else {
-        RCLCPP_FATAL(get_logger(), "Unknown Error. Stopping This Node");
+        RCLCPP_FATAL(get_logger(), "Unknown Error. Retrying connection");
       }
       rclcpp::shutdown();
       return;
