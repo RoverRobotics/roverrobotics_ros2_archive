@@ -61,7 +61,9 @@ sudo apt install ros-foxy-slam-toolbox
 Can Setup Commands:
 -----------------------------------------------
 sudo apt install can-utils
+
 sudo ip link set can0 type can bitrate 500000 sjw 127 dbitrate 2000000 dsjw 15 berr-reporting on fd on
+
 sudo ip link set up can0
 
 Launch command:
