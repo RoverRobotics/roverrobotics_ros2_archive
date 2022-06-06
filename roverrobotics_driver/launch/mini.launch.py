@@ -21,7 +21,7 @@ def generate_launch_description():
         executable = 'roverrobotics_driver',
         parameters = [hardware_config],
         respawn=True,
-        respawn_delay=4
+        respawn_delay=1
     )
 
     ld.add_action(node)

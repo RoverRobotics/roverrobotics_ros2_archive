@@ -103,9 +103,11 @@ RobotDriver::RobotDriver()
                 odometry_frequency_);
     odometry_publisher_ =
         create_publisher<nav_msgs::msg::Odometry>(odom_topic_, rclcpp::QoS(4));
+
     odometry_timer_ =
         create_wall_timer(1s / odometry_frequency_, [=]() { update_odom(); });
   }
+  odom_tf_pub = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
   robot_status_timer_ = create_wall_timer(1s / robot_status_frequency_,
                                           [=]() { publish_robot_status(); });
   RCLCPP_INFO(
@@ -299,14 +301,89 @@ void RobotDriver::update_odom() {
 
     rclcpp::shutdown();
   }
+  robot_data_ = robot_->status_request();
+  
   // RCLCPP_INFO(get_logger(), "Updating Robot Odom");
   nav_msgs::msg::Odometry odom;
+  geometry_msgs::msg::TransformStamped odom_trans;
+
+
+  
+  // odom pose stuff
+  static double pos_x = 0;
+  static double pos_y = 0;
+  static double theta = 0;
+  static double past_time = 0;
+  double now_time = 0;
+  double dt = 0;
+  float odom_covariance_0_ = 0.01;
+  float odom_covariance_35_ = 0.03;
+  tf2::Quaternion q_new;
+  
   odom.header.frame_id = odom_frame_id_;
   odom.child_frame_id = odom_child_frame_id_;
   odom.header.stamp = get_clock()->now();
+  
+  // Set up odom->base_link transform
+  odom_trans.header.stamp = get_clock()->now();
+  odom_trans.header.frame_id = odom_frame_id_;
+  odom_trans.child_frame_id = odom_child_frame_id_;
+  
+  
+  
+  // Calculate time
+  rclcpp::Time ros_now_time = get_clock()->now();
+  now_time = ros_now_time.seconds();
+  
+  dt = now_time - past_time;
+  past_time = now_time;
+
+  // Calculate position
+  if (past_time != 0)
+  {
+    pos_x = pos_x + robot_data_.linear_vel * cos(theta) * dt;
+    pos_y = pos_y + robot_data_.linear_vel * sin(theta) * dt;
+    theta = (theta + robot_data_.angular_vel * dt);
+    
+    q_new.setRPY(0, 0, theta);
+    tf2::convert(q_new, odom_trans.transform.rotation);
+    tf2::convert(q_new, odom.pose.pose.orientation);
+  }
+  
+  
+  odom_trans.transform.translation.x = pos_x;
+  odom_trans.transform.translation.y = pos_y;
+  odom_trans.transform.translation.z = 0.0;
+  //odom_trans.transform.rotation = q_new;
+  
+
+  odom.pose.pose.position.x = pos_x;
+  odom.pose.pose.position.y = pos_y;
+  odom.pose.pose.position.z = 0.0;
+    
   odom.twist.twist.linear.x = robot_data_.linear_vel;
   odom.twist.twist.angular.z = robot_data_.angular_vel;
+  
+  // Covariance: 
+  // If not moving, trust the encoders completely
+  // Otherwise set them to the ROS param
+  if (robot_data_.linear_vel == 0 && robot_data_.angular_vel == 0)
+  {
+    odom.twist.covariance[0] = odom_covariance_0_ / 1e3;
+    odom.twist.covariance[7] = odom_covariance_0_ / 1e3;
+    odom.twist.covariance[35] = odom_covariance_35_ / 1e6;
+  }
+  else
+  {
+    odom.twist.covariance[0] = odom_covariance_0_;
+    odom.twist.covariance[7] = odom_covariance_0_;
+    odom.twist.covariance[35] = odom_covariance_35_;
+  }
+
+  
+  // Publish odometry and odom->base_link transform
   odometry_publisher_->publish(odom);
+  odom_tf_pub->sendTransform(odom_trans);
 }
 
 void RobotDriver::velocity_event_callback(

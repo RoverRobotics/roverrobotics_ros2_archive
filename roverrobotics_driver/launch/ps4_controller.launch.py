@@ -23,7 +23,7 @@ def generate_launch_description():
                 {"controller": str(controller_config),
                  "topics": str(topics_config)}],
         respawn=True,
-        respawn_delay=4
+        respawn_delay=1
     )
 
     ld.add_action(node)
@@ -33,7 +33,7 @@ def generate_launch_description():
         output='screen',
         parameters=[{'dev': '/dev/input/jsX'}],
         respawn=True,
-        respawn_delay=4
+        respawn_delay=1
     )
     ld.add_action(node2)
     return ld

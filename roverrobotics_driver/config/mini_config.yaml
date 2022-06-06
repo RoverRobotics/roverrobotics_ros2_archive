@@ -24,7 +24,7 @@ roverrobotics_driver:
     # angular_top_speed:
     odom_topic: "/odom"
     odom_frame_id: "odom"
-    odom_child_frame_id: "base_footprint"
+    odom_child_frame_id: "base_link"
     # angular_a_coef:
     # angular_b_coef:
     # angular_c_coef:
