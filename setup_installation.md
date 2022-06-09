@@ -32,6 +32,7 @@ sudo apt install ros-humble-desktop
 source /opt/ros/humble/setup.bash
 
 sudo apt install python3-rosdep2
+
 rosdep update
 
 sudo apt install python3-colcon-common-extensions
