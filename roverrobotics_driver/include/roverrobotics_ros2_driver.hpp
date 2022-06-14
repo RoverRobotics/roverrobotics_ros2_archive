@@ -7,6 +7,7 @@
 #include <cmath>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <librover/protocol_mini.hpp>
+#include <librover/protocol_mega.hpp>
 #include <librover/protocol_pro.hpp>
 #include <librover/protocol_pro_2.hpp>
 #include <librover/protocol_zero_2.hpp>
@@ -20,7 +21,7 @@
 #include "std_msgs/msg/bool.hpp"
 #include "std_msgs/msg/float32.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
-#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "tf2_ros/transform_broadcaster.h"
 // #include <librover/status_data.hpp>
 using namespace std::chrono_literals;
