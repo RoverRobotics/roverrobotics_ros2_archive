@@ -211,6 +211,25 @@ RobotDriver::RobotDriver()
       return;
     }
     RCLCPP_INFO(get_logger(), "Connected to robot at %s", device_port_.c_str());
+  } else if (robot_type_ == "mega") {
+    try {
+      robot_ = std::make_unique<MegaProtocolObject>(
+          device_port_.c_str(), comm_type_, control_mode_, pid_gains_,
+          angular_scaling_params_);
+    } catch (int i) {
+      RCLCPP_FATAL(get_logger(), "Trouble connecting to robot ");
+      if (i == -1) {
+        RCLCPP_FATAL(get_logger(), "Robot at %s is not available. Stopping This Node", device_port_.c_str());
+      } else if (i == -2) {
+        RCLCPP_FATAL(get_logger(),
+                     "This Communication Method is not supported");
+      } else {
+        RCLCPP_FATAL(get_logger(), "Unknown Error. Retrying connection");
+      }
+      rclcpp::shutdown();
+      return;
+    }
+    RCLCPP_INFO(get_logger(), "Connected to robot at %s", device_port_.c_str());
   } else {
     RCLCPP_WARN(get_logger(),
                 "Robot Type is currently not suppported. Stopping this Node");
