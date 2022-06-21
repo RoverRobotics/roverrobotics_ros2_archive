@@ -5,7 +5,7 @@ roverrobotics_driver:
     motor_control_p_gain: 0.0005
     motor_control_i_gain: 0.000
     motor_control_d_gain: 0.00007
-    publish_tf: true
+    publish_tf: false
     # robot_status_topic: "/"
     # robot_status_frequency: 60.0
     # robot_info_request_topic:
@@ -22,7 +22,7 @@ roverrobotics_driver:
     control_mode: "OPEN_LOOP"
     # linear_top_speed:
     # angular_top_speed:
-    odom_topic: "/odom"
+    odom_topic: "/odom_raw"
     odom_frame_id: "odom"
     odom_child_frame_id: "base_link"
     # angular_a_coef:
