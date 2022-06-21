@@ -11,7 +11,7 @@ def generate_launch_description():
     #     'roverrobotics_description'), 'urdf', 'rover.urdf')
     # assert urdf.is_file()
     hardware_config = Path(get_package_share_directory(
-        'roverrobotics_driver'), 'config', 'mini_config.yaml')
+        'roverrobotics_driver'), 'config', 'mega_config.yaml')
     assert hardware_config.is_file()
     ld = LaunchDescription()
 
