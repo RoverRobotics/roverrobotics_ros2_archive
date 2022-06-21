@@ -19,7 +19,7 @@ def generate_launch_description():
             package="tf2_ros",
             executable="static_transform_publisher",
             output='screen',
-            arguments=['0', '0', '0.1016', '0', '0',
+            arguments=['0', '0', '0.1016', str(pi), '0',
                        '0', 'base_link', 'base_imu_link'],
         ),
         Node(

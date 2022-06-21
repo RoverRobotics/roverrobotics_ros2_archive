@@ -402,7 +402,9 @@ void RobotDriver::update_odom() {
   
   // Publish odometry and odom->base_link transform
   odometry_publisher_->publish(odom);
-  odom_tf_pub->sendTransform(odom_trans);
+  if(pub_odom_tf_){
+    odom_tf_pub->sendTransform(odom_trans);
+  }
 }
 
 void RobotDriver::velocity_event_callback(
