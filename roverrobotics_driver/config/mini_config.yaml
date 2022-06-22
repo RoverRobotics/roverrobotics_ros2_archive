@@ -14,7 +14,7 @@ roverrobotics_driver:
     device_port: "can0"
     comm_type: "can"
     
-    # speed_topic:
+    speed_topic: /cmd_vel
     # estop_trigger_topic:
     # estop_reset_topic:
     # trim_topic:
@@ -22,7 +22,7 @@ roverrobotics_driver:
     control_mode: "OPEN_LOOP"
     # linear_top_speed:
     # angular_top_speed:
-    odom_topic: "/odom_raw"
+    odom_topic: "/odom"
     odom_frame_id: "odom"
     odom_child_frame_id: "base_link"
     # angular_a_coef:

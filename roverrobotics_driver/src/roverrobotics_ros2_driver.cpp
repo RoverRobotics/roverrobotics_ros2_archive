@@ -35,7 +35,7 @@ RobotDriver::RobotDriver()
   float pi_d_ = declare_parameter("motor_control_d_gain", PID_D_DEFAULT_);
   // Odom
   pub_odom_tf_ = declare_parameter("publish_tf", PUB_ODOM_TF_DEFAULT_);
-  odom_topic_ = declare_parameter("odom_topic", "/odom_raw");
+  odom_topic_ = declare_parameter("odom_topic", "/odom");
   odometry_frequency_ =
       declare_parameter("odometry_frequency", ROBOT_ODOM_FREQUENCY_DEFAULT_);
   odom_frame_id_ = declare_parameter("odom_frame_id", "odom");

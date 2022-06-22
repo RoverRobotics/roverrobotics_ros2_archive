@@ -1,5 +1,5 @@
 joy_manager:
-  topic: /cmd_vel/managed
+  topic: /cmd_vel
   type: Twist
   publish_multiple_halt: false
   throttle:
