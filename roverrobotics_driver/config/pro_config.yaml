@@ -21,7 +21,7 @@ roverrobotics_driver:
     control_mode: "OPEN_LOOP"
     # linear_top_speed:
     # angular_top_speed:
-    # odom_topic: "/odom"
+    odom_topic: "/odom_raw"
     # odom_frame_id:
     # odom_child_frame_id:
     # angular_a_coef:
