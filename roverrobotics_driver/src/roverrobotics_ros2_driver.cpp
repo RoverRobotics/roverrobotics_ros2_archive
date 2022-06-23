@@ -35,7 +35,7 @@ RobotDriver::RobotDriver()
   float pi_d_ = declare_parameter("motor_control_d_gain", PID_D_DEFAULT_);
   // Odom
   pub_odom_tf_ = declare_parameter("publish_tf", PUB_ODOM_TF_DEFAULT_);
-  odom_topic_ = declare_parameter("odom_topic", "/odom");
+  odom_topic_ = declare_parameter("odom_topic", "/odom_raw");
   odometry_frequency_ =
       declare_parameter("odometry_frequency", ROBOT_ODOM_FREQUENCY_DEFAULT_);
   odom_frame_id_ = declare_parameter("odom_frame_id", "odom");
@@ -101,13 +101,13 @@ RobotDriver::RobotDriver()
      RCLCPP_INFO(get_logger(),
                 "Publishing Robot TF on %s at %.2Fhz", odom_topic_.c_str(),
                 odometry_frequency_);
-    odometry_publisher_ =
+  }
+  odom_tf_pub = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+  odometry_publisher_ =
         create_publisher<nav_msgs::msg::Odometry>(odom_topic_, rclcpp::QoS(4));
 
     odometry_timer_ =
         create_wall_timer(1s / odometry_frequency_, [=]() { update_odom(); });
-  }
-  odom_tf_pub = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
   robot_status_timer_ = create_wall_timer(1s / robot_status_frequency_,
                                           [=]() { publish_robot_status(); });
   RCLCPP_INFO(
@@ -402,6 +402,7 @@ void RobotDriver::update_odom() {
   
   // Publish odometry and odom->base_link transform
   odometry_publisher_->publish(odom);
+  
   if(pub_odom_tf_){
     odom_tf_pub->sendTransform(odom_trans);
   }

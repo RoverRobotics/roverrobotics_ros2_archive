@@ -2,9 +2,9 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>roverrobotics_driver</name>
-  <version>0.1.1</version>
+  <version>0.2.0</version>
   <description>
-    Ros Wrapper for Rover Robots
+    ROS2 Wrapper for Rover Robots
   </description>
   <maintainer email="will@roverrobotics.com">William Rook</maintainer>
   <license>BSD-3-Clause</license>

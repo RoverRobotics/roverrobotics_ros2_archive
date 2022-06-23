@@ -1,0 +1,7 @@
+#BNO055 Config File
+bno055_driver:
+    ros__parameters:
+	
+        self_manage: true
+        use_magnetometer: false
+

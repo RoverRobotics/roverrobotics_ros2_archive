@@ -24,12 +24,12 @@ def generate_launch_description():
         respawn_delay=1
     )
     
-    config_path = Path(get_package_share_directory("ros2_razor_imu"), "config",
-                          "razor.yaml")
+    config_path = Path(get_package_share_directory("roverrobotics_driver"), "config",
+                          "bno_conf.yaml")
 
     imu_node = Node(
-        package='ros2_razor_imu', 
-        executable='imu_node', 
+        package='bno055_driver', 
+        executable='bno055_driver', 
         parameters=[config_path]
         )
         
