@@ -40,3 +40,10 @@ source install/setup.sh
 ```
 ros2 launch roverrobotics_driver <launch file name>
 ```
+  ```
+  Launch Files:
+  <model>.launch.py: Launches robot configuration for specific rover robot. (i.e. Mini, Mega, Pro2, Zero2)
+  <model>_teleop.launch.py: Launches robot configuration with teleop controller enabled.
+  rover_slam_mapping.launch.py: Launches lidar and slam toolbox in asynchronous mapping mode(Requires slam package).
+  rover_slam_localization.launch.py: Launches lidar and slam toolbox in localization mapping mode.
+  ```
