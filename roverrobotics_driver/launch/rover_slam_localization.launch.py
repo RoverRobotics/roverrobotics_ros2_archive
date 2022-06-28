@@ -25,32 +25,32 @@ def generate_launch_description():
     serial_port_ld = DeclareLaunchArgument(
         'serial_port',
         default_value=serial_port,
-        description='Specifying usb port to connected lidar'),
+        description='Specifying usb port to connected lidar')
 
     serial_baud_ld = DeclareLaunchArgument(
         'serial_baudrate',
         default_value=serial_baudrate,
-        description='Specifying usb port baudrate to connected lidar'),
+        description='Specifying usb port baudrate to connected lidar')
         
     frame_ld = DeclareLaunchArgument(
         'frame_id',
         default_value=frame_id,
-        description='Specifying frame_id of lidar'),
+        description='Specifying frame_id of lidar')
 
     inverted_ld = DeclareLaunchArgument(
         'inverted',
         default_value=inverted,
-        description='Specifying whether or not to invert scan data'),
+        description='Specifying whether or not to invert scan data')
 
     angle_ld = DeclareLaunchArgument(
         'angle_compensate',
         default_value=angle_compensate,
-        description='Specifying whether or not to enable angle_compensate of scan data'),
+        description='Specifying whether or not to enable angle_compensate of scan data')
 
     scan_ld = DeclareLaunchArgument(
         'scan_mode',
         default_value=scan_mode,
-        description='Specifying scan mode of lidar'),
+        description='Specifying scan mode of lidar')
 
     lidar_node = Node(
         package='sllidar_ros2',
@@ -62,7 +62,7 @@ def generate_launch_description():
                      'inverted': inverted, 
                      'angle_compensate': angle_compensate, 
                      'scan_mode': scan_mode}],
-        output='screen'),
+        output='screen')
     
     # Add lidar setup to launch description
     ld.add_action(serial_port_ld)
