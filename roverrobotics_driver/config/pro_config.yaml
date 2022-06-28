@@ -11,9 +11,9 @@ roverrobotics_driver:
     # robot_info_request_topic:
     # robot_info_topic:
     robot_type: "pro"
-    device_port: "rover-pro"
+    device_port: "/dev/rover-pro"
     comm_type: "serial"
-    # speed_topic:
+    speed_topic: "/cmd_vel"
     # estop_trigger_topic:
     # estop_reset_topic:
     # trim_topic:
