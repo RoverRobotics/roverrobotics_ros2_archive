@@ -8,19 +8,19 @@ LEFT_JOY_VERT:
   type: axis
   index: 1
   exclusion: [-0.15, 0.15]
-  scale: 1.5
+  scale: 1.25
   offset: 0
 RIGHT_JOY_HORIZ:
   type: axis
   index: 3
   exclusion: [-0.15, 0.15]
-  scale: 10
+  scale: 5
   offset: 0
 RIGHT_JOY_VERT:
   type: axis
   index: 4
   exclusion: [-0.15, 0.15]
-  scale: 20
+  scale: 0
   offset: 0
 RIGHT_TRIGGER:
   type: axis
