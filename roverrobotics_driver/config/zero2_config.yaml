@@ -13,7 +13,7 @@ roverrobotics_driver:
     robot_type: "zero2"
     device_port: "/dev/rover-zero-v2"
     comm_type: "serial"
-    speed_topic: "/cmd_vel"
+    speed_topic: "/cmd_vel
     # estop_trigger_topic:
     # estop_reset_topic:
     # trim_topic:

@@ -13,13 +13,13 @@ from launch_ros.actions import Node
 def generate_launch_description():
     ld = LaunchDescription()
 
-    # RP Lidar A3 Setup
+    # RP Lidar S2 Setup
     serial_port = LaunchConfiguration('serial_port', default='/dev/ttyUSB0')
-    serial_baudrate = LaunchConfiguration('serial_baudrate', default='256000') #for A3 is 256000
+    serial_baudrate = LaunchConfiguration('serial_baudrate', default='1000000') #for s2 is 1000000
     frame_id = LaunchConfiguration('frame_id', default='laser')
     inverted = LaunchConfiguration('inverted', default='false')
     angle_compensate = LaunchConfiguration('angle_compensate', default='true')
-    scan_mode = LaunchConfiguration('scan_mode', default='Sensitivity')
+    scan_mode = LaunchConfiguration('scan_mode', default='DenseBoost')
     
     
     serial_port_ld = DeclareLaunchArgument(
@@ -86,7 +86,10 @@ def generate_launch_description():
         default_value=os.path.join(get_package_share_directory("roverrobotics_driver"),
                                    'config/slam_configs', 'mapper_params_localization.yaml'),
         description='Full path to the ROS2 parameters file to use for the slam_toolbox node')
-
+    declare_map_file = DeclareLaunchArgument(
+    	'map_file_name',
+    	default_value=os.path.join(get_package_share_directory("roverrobotics_driver"),
+    				   'maps', 'serialized_office_map'))
     start_async_slam_toolbox_node = Node(
         parameters=[
           slam_params_file,
@@ -100,6 +103,7 @@ def generate_launch_description():
     # Add slam setup to launch description
     ld.add_action(declare_use_sim_time_argument)
     ld.add_action(declare_slam_params_file_cmd)
+    ld.add_action(declare_map_file)
     ld.add_action(start_async_slam_toolbox_node)
     
     return ld
