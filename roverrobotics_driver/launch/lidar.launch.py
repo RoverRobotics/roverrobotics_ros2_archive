@@ -14,7 +14,7 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     # RP Lidar S2 Setup
-    serial_port = LaunchConfiguration('serial_port', default='/dev/ttyUSB0')
+    serial_port = LaunchConfiguration('serial_port', default='/dev/sl-lidar')
     serial_baudrate = LaunchConfiguration('serial_baudrate', default='1000000') #for s2 is 1000000
     frame_id = LaunchConfiguration('frame_id', default='laser')
     inverted = LaunchConfiguration('inverted', default='false')
