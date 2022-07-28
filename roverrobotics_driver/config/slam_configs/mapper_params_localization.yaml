@@ -15,8 +15,8 @@ slam_toolbox:
     mode: localization #localization
 
     # if you'd like to start localizing on bringup in a map and pose
-    map_file_name: /maps/serialized_office_map
-    #map_start_pose: [5.0, 1.0, 0.0]
+    #map_file_name: ~/maps/serialized_office_map
+    map_start_pose: [0.0, 0.0, 0.0]
 
     debug_logging: false
     throttle_scans: 1

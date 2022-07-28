@@ -14,7 +14,7 @@ roverrobotics_driver:
     device_port: "can0"
     comm_type: "can"
     
-    # speed_topic:
+    speed_topic: "/cmd_vel"
     # estop_trigger_topic:
     # estop_reset_topic:
     # trim_topic:
