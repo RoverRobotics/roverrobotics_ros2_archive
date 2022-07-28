@@ -9,6 +9,7 @@ from launch.actions import DeclareLaunchArgument
 from launch.actions import LogInfo
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from math import pi
 
 
 def generate_launch_description():
@@ -127,10 +128,32 @@ def generate_launch_description():
         output='screen')
 
     # Add slam setup to launch description
-    ld.add_action(declare_use_sim_time_argument)
-    ld.add_action(declare_slam_params_file_cmd)
-    ld.add_action(declare_map_file)
-    ld.add_action(start_async_slam_toolbox_node)
+    #ld.add_action(declare_use_sim_time_argument)
+    #ld.add_action(declare_slam_params_file_cmd)
+    #ld.add_action(declare_map_file)
+    #ld.add_action(start_async_slam_toolbox_node)
+    map_tf = Node(
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            output='screen',
+            arguments=['0.0', '0', '0.0', '0', '0', '0', 'map', 'odom'],
+        )
+    imu_tf = Node(
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            output='screen',
+            arguments=['0', '0', '0.1016', '0', '0',
+                       '0', 'base_link', 'base_imu_link'],
+        )
+    laser_tf = Node(
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            output='screen',
+            arguments=['0.1524', '0', '0.2413', str(pi), '0', '0', 'base_link', 'laser'],
+        )
+    ld.add_action(map_tf)
+    ld.add_action(imu_tf)
+    ld.add_action(laser_tf)
     
     return ld
 

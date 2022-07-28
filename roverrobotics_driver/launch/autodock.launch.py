@@ -11,18 +11,16 @@ def generate_launch_description():
     #     'roverrobotics_description'), 'urdf', 'rover.urdf')
     # assert urdf.is_file()
     hardware_config = Path(get_package_share_directory(
-        'roverrobotics_driver'), 'config', 'mega_config.yaml')
+        'rover_autodock'), 'config', 'autodocker_config.yaml')
     assert hardware_config.is_file()
     ld = LaunchDescription()
 
-    robot_driver = Node(
-        package = 'roverrobotics_driver',
-        name = 'roverrobotics_driver',
-        executable = 'roverrobotics_driver',
+    robot_dock = Node(
+        package = 'rover_autodock',
+        executable = 'rover_autodock',
         parameters = [hardware_config],
-        respawn=True,
-        respawn_delay=1
-    )
-    
-    ld.add_action(robot_driver)
+        output='screen')
+
+    ld.add_action(robot_dock)
+
     return ld
