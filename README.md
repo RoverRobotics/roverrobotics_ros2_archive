@@ -9,7 +9,7 @@
 1. Cloning this repository into your workspace
 ```
 cd workspace/src/
-git clone https://github.com/jackarivera/roverrobotics_mini_ros2 
+git clone https://github.com/RoverRobotics/roverrobotics_ros2.git
 ```
 2. Install Udev rules for robot
 ```
