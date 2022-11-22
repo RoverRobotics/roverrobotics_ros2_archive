@@ -13,7 +13,7 @@ git clone https://github.com/RoverRobotics/roverrobotics_ros2.git
 ```
 2. Install Udev rules for robot
 ```
-cd workspace/src/roverrobotics_mini_ros2/udev
+cd workspace/src/roverrobotics_driver/udev
 sudo cp 55-roverrobotics.rules /etc/udev/rules.d/55-roverrobotics.rules && sudo udevadm control --reload-rules && udevadm trigger
 ```
 3. Install shared library
