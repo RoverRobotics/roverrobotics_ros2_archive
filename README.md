@@ -49,6 +49,8 @@ ros2 launch roverrobotics_driver <launch file name>
   ```
 ## Detailed Google Doc with Installation/Setup Instructions
 [Setup Instructions](https://docs.google.com/document/d/1U1tGi4dLHvz1jjJ7PQ9zkREM9P-C8m2a0YD0BKWqybM/edit?usp=sharing)
+    
 Additional ROS2 Packages:
 [Intel Realsense d435i Driver](https://github.com/IntelRealSense/realsense-ros)
+    
 [Slamtec SlLidar Driver](https://github.com/Slamtec/sllidar_ros2)
