@@ -47,3 +47,5 @@ ros2 launch roverrobotics_driver <launch file name>
   rover_slam_mapping.launch.py: Launches lidar and slam toolbox in asynchronous mapping mode(Requires slam package).
   rover_slam_localization.launch.py: Launches lidar and slam toolbox in localization mapping mode.
   ```
+## Detailed Google Doc with Installation/Setup Instructions
+[Setup Instructions](https://docs.google.com/document/d/1U1tGi4dLHvz1jjJ7PQ9zkREM9P-C8m2a0YD0BKWqybM/edit?usp=sharing)
