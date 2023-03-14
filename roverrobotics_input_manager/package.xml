@@ -4,7 +4,7 @@
     <name>roverrobotics_input_manager</name>
     <version>0.1.1</version>
     <description>Contains Rover provided teleoperation applications.</description>
-    <maintainer email="will@roverrobotics.com">Wiliam Rook</maintainer>
+    <maintainer email="info@roverrobotics.com">Rover Robotics</maintainer>
     <license>BSD-3-Clause</license>
 
     <author email="will@roverrobotics.com">William Rook</author>
