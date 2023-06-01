@@ -28,10 +28,9 @@ def generate_launch_description():
 
     ld.add_action(node)
     node2 = Node(
-        package='joy',
-        executable='joy_node',
+        package='joy_linux',
+        executable='joy_linux_node',
         output='screen',
-        parameters=[{'dev': '/dev/input/jsX'}],
         respawn=True,
         respawn_delay=1
     )
