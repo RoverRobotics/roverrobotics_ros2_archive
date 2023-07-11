@@ -1,3 +1,5 @@
+# THIS REPOSITORY HAS BEEN ARCHIVED AND IS SUPERSEDED BY [ROVERROBOTICS_ROS2](https://github.com/RoverRobotics/roverrobotics_ros2)
+
 # roverrobotics_ros2
 ## About:
 - This is a ROS2 wrapper to interface with roverrobotics' robots.
